@@ -36,9 +36,9 @@ export const MARKET_FACTOR: Record<MarketTier, number> = {
   blocked: 0,
 };
 
-const CORE = new Set(['US','GB','CA','AU','DE','NL','CH','SE','SG','AE']);
-const DEVELOPED = new Set(['FR','IT','ES','IE','AT','BE','DK','NO','FI','JP','KR','NZ','IL','HK']);
-const EMERGING = new Set(['BR','MX','IN','ID','PH','NG','ZA','TR','PL','CZ','RO','TH','VN','CO','AR','CL','EG','KE']);
+const CORE = new Set(['US', 'GB', 'CA', 'AU', 'DE', 'NL', 'CH', 'SE', 'SG', 'AE']);
+const DEVELOPED = new Set(['FR', 'IT', 'ES', 'IE', 'AT', 'BE', 'DK', 'NO', 'FI', 'JP', 'KR', 'NZ', 'IL', 'HK']);
+const EMERGING = new Set(['BR', 'MX', 'IN', 'ID', 'PH', 'NG', 'ZA', 'TR', 'PL', 'CZ', 'RO', 'TH', 'VN', 'CO', 'AR', 'CL', 'EG', 'KE']);
 
 export function marketTier(country: string): MarketTier {
   const iso = country.toUpperCase();
@@ -57,12 +57,23 @@ export function sizeFactor(qualifiedNet: number): number {
 }
 
 export function qualifiedNet(input: {
-  listPrice: number; discount: number; refunds?: number; chargebacks?: number;
+  listPrice: number;
+  discount: number;
+  refunds?: number;
+  chargebacks?: number;
 }) {
-  return Math.max(0, input.listPrice * (1 - input.discount) - (input.refunds ?? 0) - (input.chargebacks ?? 0));
+  return Math.max(
+    0,
+    input.listPrice * (1 - input.discount) - (input.refunds ?? 0) - (input.chargebacks ?? 0)
+  );
 }
 
-export function commission(input: { qualifiedNet: number; rate: number; floor: number; cap: number }) {
+export function commission(input: {
+  qualifiedNet: number;
+  rate: number;
+  floor: number;
+  cap: number;
+}) {
   const raw = input.qualifiedNet * input.rate;
   const floored = Math.max(raw, input.floor);
   const capped = Math.min(floored, input.cap);
@@ -79,8 +90,11 @@ export function getTier(score: number, gmv: number): TierKey {
 }
 
 export function qualityAdjustment(flags: {
-  fundedRate: number; firmFundedRate: number; firstPayoutRate: number;
-  firmFirstPayoutRate: number; refundChargebackRate: number;
+  fundedRate: number;
+  firmFundedRate: number;
+  firstPayoutRate: number;
+  firmFirstPayoutRate: number;
+  refundChargebackRate: number;
 }) {
   if (flags.refundChargebackRate > 0.08) return { adjustment: -2, freeze: true };
   if (flags.refundChargebackRate > 0.04) return { adjustment: -1, freeze: false };
@@ -98,15 +112,29 @@ export function consulRoyalty(input: {
   originatedByConsul: boolean;
   isPersonalLink: boolean;
 }) {
-  if (!input.isFirstPurchase || !input.originatedByConsul || input.isPersonalLink || input.qualifiedNet <= 0) {
-    return { payable: false, rate: 0, amount: 0, region: marketTier(input.saleCountry), size: sizeFactor(input.qualifiedNet), base: CONSUL_BANDS[input.band].royaltyBase };
-  }
   const region = marketTier(input.saleCountry);
   const size = sizeFactor(input.qualifiedNet);
   const base = CONSUL_BANDS[input.band].royaltyBase;
+
+  if (
+    !input.isFirstPurchase ||
+    !input.originatedByConsul ||
+    input.isPersonalLink ||
+    input.qualifiedNet <= 0 ||
+    MARKET_FACTOR[region] === 0
+  ) {
+    return { payable: false, rate: 0, amount: 0, region, size, base };
+  }
+
   const rate = Math.min(0.018, Math.max(0.007, base * MARKET_FACTOR[region] * size));
-  if (MARKET_FACTOR[region] === 0) return { payable: false, rate: 0, amount: 0, region, size, base };
-  return { payable: true, rate, amount: input.qualifiedNet * rate, region, size, base };
+  return {
+    payable: true,
+    rate,
+    amount: input.qualifiedNet * rate,
+    region,
+    size,
+    base,
+  };
 }
 
 export function capMonthlyRoyalty(salary: number, rawRoyalty: number) {
