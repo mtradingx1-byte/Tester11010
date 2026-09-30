@@ -1,39 +1,44 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-
-const links = [
-  { href: '/partners', label: 'Partners' },
-  { href: '/partners#tiers', label: 'How It Works' },
-  { href: '/consul', label: 'Consul' },
-  { href: '/app', label: 'Dashboard' },
-];
 
 export function TopNav() {
-  const pathname = usePathname();
-
   return (
-    <header className="site-nav">
-      <div className="site-nav__inner">
-        <Link href="/partners" className="brand-lockup" aria-label="Aether">
-          <span className="brand-mark">A</span>
-          <span className="brand-name">AETHER</span>
+    <header style={{
+      position: 'sticky',
+      top: 0,
+      zIndex: 50,
+      background: '#05090d',
+      borderBottom: '1px solid rgba(255,255,255,0.08)'
+    }}>
+      <div style={{
+        width: 'min(1600px, calc(100% - 32px))',
+        margin: '0 auto',
+        minHeight: 64,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 20
+      }}>
+        <Link href="/partners" style={{ color: '#f0d294', fontWeight: 700, letterSpacing: '0.22em', fontSize: 14 }}>
+          AETHER
         </Link>
 
-        <nav className="site-nav__links">
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={pathname === link.href || (link.href === '/partners' && pathname === '/') ? 'is-active' : ''}
-            >
-              {link.label}
-            </Link>
-          ))}
+        <nav style={{ display: 'flex', gap: 22 }}>
+          <Link href="/partners" style={{ color: '#f0d294', fontSize: 13, fontWeight: 600 }}>Partners</Link>
+          <Link href="/partners#tiers" style={{ color: '#9aa6b2', fontSize: 13, fontWeight: 600 }}>How It Works</Link>
+          <Link href="/consul" style={{ color: '#9aa6b2', fontSize: 13, fontWeight: 600 }}>Consul</Link>
+          <Link href="/app" style={{ color: '#9aa6b2', fontSize: 13, fontWeight: 600 }}>Dashboard</Link>
         </nav>
 
-        <Link className="btn primary nav-cta" href="/partners/apply">
+        <Link href="/partners/apply" style={{
+          background: 'linear-gradient(180deg,#f2cf83,#c4963f)',
+          color: '#17120b',
+          fontSize: 12,
+          fontWeight: 700,
+          padding: '10px 16px',
+          borderRadius: 8
+        }}>
           Apply to Join →
         </Link>
       </div>
