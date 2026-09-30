@@ -1,0 +1,3 @@
+import {NextRequest,NextResponse} from 'next/server';
+import {commission,qualifiedNet,TIERS} from '@/lib/economics';
+export async function POST(req:NextRequest){const body=await req.json();const tier=TIERS[body.tier as keyof typeof TIERS];if(!tier)return NextResponse.json({error:'Unknown tier'},{status:400});const net=qualifiedNet({listPrice:Number(body.listPrice),discount:Number(body.discount||0),refunds:Number(body.refunds||0),chargebacks:Number(body.chargebacks||0)});const rate=Number(body.isRepeat?tier.repeat:tier.first);const value=commission({qualifiedNet:net,rate,floor:tier.floor,cap:tier.cap});return NextResponse.json({qualifiedNet:net,rate,commission:value,hardCeiling:net*.12});}

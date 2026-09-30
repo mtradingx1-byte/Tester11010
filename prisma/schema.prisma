@@ -1,0 +1,14 @@
+generator client { provider = "prisma-client-js" }
+datasource db { provider = "postgresql" url = env("DATABASE_URL") }
+model User { id String @id @default(cuid()); email String @unique; name String?; role String @default("partner"); createdAt DateTime @default(now()); partner PartnerProfile? }
+model PartnerProfile { id String @id @default(cuid()); userId String @unique; user User @relation(fields:[userId],references:[id]); country String; tier String @default("spark"); partnerId String @unique; status String @default("pending"); audienceSize Int?; channels Json?; scoreSnapshots ScoreSnapshot[]; orders Order[]; riskEvents RiskEvent[]; createdAt DateTime @default(now()) }
+model TierSnapshot { id String @id @default(cuid()); partnerId String; tier String; score Float; qualifiedGMV Float; effectiveFirstRate Float; effectiveRepeatRate Float; createdAt DateTime @default(now()) }
+model ReferralClick { id String @id @default(cuid()); partnerId String; campaign String?; source String?; createdAt DateTime @default(now()) }
+model Order { id String @id @default(cuid()); partnerId String?; traderId String; model String; accountSize Int; listPrice Float; discount Float; cashCollected Float; refundAmount Float @default(0); chargebackAmount Float @default(0); qualifiedNet Float; firstPurchase Boolean @default(true); saleDate DateTime; commissionLedger CommissionLedger? }
+model CommissionLedger { id String @id @default(cuid()); orderId String @unique; tier String; rate Float; floor Float; cap Float; commission Float; status String @default("pending"); clawback Float @default(0); payableAt DateTime? }
+model Payout { id String @id @default(cuid()); partnerId String; amount Float; status String @default("pending"); requestedAt DateTime @default(now()); paidAt DateTime? }
+model ScoreSnapshot { id String @id @default(cuid()); partnerId String; score Float; qualifiedGMV Float; fundedRate Float; firstPayoutRate Float; integrity Float; averageOrderValue Float; activeWeeks Int; createdAt DateTime @default(now()) }
+model ConsulSeat { id String @id @default(cuid()); country String @unique; partnerId String?; status String @default("open"); salaryBand String @default("A"); salary Float @default(800); trailingGMV Float @default(0); activatedAt DateTime? }
+model ConsulOrigin { id String @id @default(cuid()); consulSeatId String; partnerId String; originDate DateTime @default(now()); royaltyRate Float; }
+model RiskEvent { id String @id @default(cuid()); partnerId String; traderId String?; type String; riskScore Int; status String @default("pending"); householdDisclosed Boolean @default(false); evidence Json?; reviewerId String?; resolutionNote String?; createdAt DateTime @default(now()); resolvedAt DateTime? }
+model AuditLog { id String @id @default(cuid()); actorId String; action String; entityType String; entityId String; metadata Json?; createdAt DateTime @default(now()) }

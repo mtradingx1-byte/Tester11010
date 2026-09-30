@@ -1,0 +1,1 @@
+export function ScoreOrb({score}:{score:number}){ return <div className="score-orb-wrap" aria-label={`Partner Score ${score} out of 100`}><img src="/assets/reference/partner-score-orb-approved-crop.png" alt="" className="score-orb-image"/></div> }
