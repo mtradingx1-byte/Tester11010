@@ -1,3 +1,78 @@
-import {MapPin, ShieldCheck, ArrowUpRight} from 'lucide-react';
-import {consuls} from '@/lib/demo';
-export default function Consul(){return <div className="mx-auto max-w-[1500px] px-6 py-10"><div className="mb-6"><div className="text-xs uppercase tracking-[.22em] text-[#c6a15b]">Consul · country desk</div><h1 className="serif mt-1 text-5xl">Run a country partner desk.</h1><p className="mt-2 max-w-3xl text-[#8b97a8]">One funded seat per ISO country. Salary is linked to country GMV, while royalty is tied only to first-purchase net GMV from partners you personally originate.</p></div><div className="grid gap-6 lg:grid-cols-[1.2fr_.8fr]"><div className="card grid-bg rounded-3xl p-6"><div className="flex items-center justify-between"><div><div className="text-sm font-semibold">Country seat map</div><div className="text-xs text-[#8b97a8]">Demo country desk status</div></div><span className="pill">6 active / at-risk seats</span></div><div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-3">{consuls.map(c=><div key={c.country} className="rounded-2xl border border-white/10 bg-black/15 p-4"><div className="flex items-center justify-between"><span className="text-lg">{c.country}</span><span className={`rounded-full px-2 py-1 text-[10px] ${c.seat==='Active'?'bg-[#3ee0c6]/10 text-[#3ee0c6]':'bg-[#c6a15b]/10 text-[#c6a15b]'}`}>{c.seat}</span></div><div className="mt-4 text-sm font-semibold">${c.gmv.toLocaleString()} GMV</div><div className="mt-1 text-xs text-[#8b97a8]">Band {c.band} · ${c.salary}/mo</div></div>)}</div></div><div className="space-y-6"><div className="card rounded-3xl p-6"><div className="text-xs uppercase tracking-[.18em] text-[#8b97a8]">Seat economics</div><div className="mt-5 space-y-4">{[['Activation','≥ $90K 90D GMV'],['Salary pause','< $60K for 90 days'],['Royalty','1.2% A/B · 1.0% C/D'],['Cap','1.5× salary monthly']].map(x=><div key={x[0]} className="flex justify-between gap-4 border-b border-white/10 pb-3 text-sm"><span className="text-[#8b97a8]">{x[0]}</span><b>{x[1]}</b></div>)}</div></div><div className="card rounded-3xl p-6"><div className="flex items-center gap-2"><ShieldCheck className="text-[#3ee0c6]" size={18}/><span className="font-semibold">Compliance</span></div><p className="mt-2 text-sm leading-6 text-[#8b97a8]">Consul royalties are auditable by partner origin. No royalty on personal links, repeats or non-qualified sales.</p><button className="btn btn-gold mt-4 w-full">Open country ledger <ArrowUpRight size={15}/></button></div></div></div></div>}
+import { ShieldCheck, ArrowUpRight } from 'lucide-react';
+import { consuls } from '@/lib/demo';
+
+export default function Consul() {
+  return (
+    <div className="mx-auto max-w-[1500px] px-6 py-10">
+      <div className="mb-6">
+        <div className="text-xs uppercase tracking-[.22em] text-[#c6a15b]">Consul · country desk</div>
+        <h1 className="serif mt-1 text-5xl">Run a country partner desk.</h1>
+        <p className="mt-2 max-w-3xl text-[#8b97a8]">
+          One funded seat per ISO country. Salary is linked to country GMV. Royalty is paid only on first-purchase net GMV from partners you personally originate, and now scales by the region of the sale and the size of the sale.
+        </p>
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-[1.2fr_.8fr]">
+        <div className="card grid-bg rounded-3xl p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-sm font-semibold">Country seat map</div>
+              <div className="text-xs text-[#8b97a8]">Demo country desk status</div>
+            </div>
+            <span className="pill">6 active / at-risk seats</span>
+          </div>
+
+          <div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-3">
+            {consuls.map((c) => (
+              <div key={c.country} className="rounded-2xl border border-white/10 bg-black/15 p-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-lg">{c.country}</span>
+                  <span className={`rounded-full px-2 py-1 text-[10px] ${c.seat === 'Active' ? 'bg-[#3ee0c6]/10 text-[#3ee0c6]' : 'bg-[#c6a15b]/10 text-[#c6a15b]'}`}>
+                    {c.seat}
+                  </span>
+                </div>
+                <div className="mt-4 text-sm font-semibold">${c.gmv.toLocaleString()} GMV</div>
+                <div className="mt-1 text-xs text-[#8b97a8]">Band {c.band} · ${c.salary}/mo</div>
+                <div className="mt-1 text-xs text-[#8b97a8]">Royalty ${c.royalty.toLocaleString()}/mo before cap</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="space-y-6">
+          <div className="card rounded-3xl p-6">
+            <div className="text-xs uppercase tracking-[.18em] text-[#8b97a8]">Seat economics</div>
+            <div className="mt-5 space-y-4">
+              {[
+                ['Activation', '≥ $90K 90D GMV'],
+                ['Salary pause', '< $60K for 90 days'],
+                ['Royalty', 'Base 1.2% A/B · 1.0% C/D, then × region × size'],
+                ['Region factor', 'Core 1.15 · Developed 1.00 · Emerging 0.90 · Frontier 0.75'],
+                ['Size factor', '<$50 0.85 · $100–199 1.00 · $400+ 1.20'],
+                ['Cap', '1.5× salary monthly'],
+              ].map((x) => (
+                <div key={x[0]} className="flex justify-between gap-4 border-b border-white/10 pb-3 text-sm">
+                  <span className="text-[#8b97a8]">{x[0]}</span>
+                  <b>{x[1]}</b>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="card rounded-3xl p-6">
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="text-[#3ee0c6]" size={18} />
+              <span className="font-semibold">Compliance</span>
+            </div>
+            <p className="mt-2 text-sm leading-6 text-[#8b97a8]">
+              Consul royalties are auditable by partner origin and sale country. No royalty on personal links, repeats, refunds, chargebacks or non-qualified sales. Monthly royalty cannot exceed 1.5× salary.
+            </p>
+            <button className="btn btn-gold mt-4 w-full">
+              Open country ledger <ArrowUpRight size={15} />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
